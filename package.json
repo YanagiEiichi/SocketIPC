@@ -1,0 +1,17 @@
+{
+  "name": "SocketIPC",
+  "version": "0.1.0",
+  "description": "Implements IPC with Socket on cluster mode",
+  "main": "SocketIPC.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "cd tests && ./test.sh"
+  },
+  "author": "admin@web-tinker.com",
+  "license": "MIT",
+  "dependencies": {
+    "FrameGenerator": "^0.2.4"
+  }
+}
