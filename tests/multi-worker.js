@@ -13,7 +13,7 @@ if (cluster.isMaster) {
             let hehe = SocketIPC.call('hehe');
             assert.equal(hehe.length, 0);
             process.exit(0);
-          }, 100);
+          }, 500);
         }).catch(console.error);
       }
     }

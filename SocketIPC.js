@@ -22,7 +22,7 @@ const receive = (that, frame) => {
     case 'call':
       let chains = that[registeredMethods][method];
       if (!chains) return send(that, { id, type: 'error', params: { name: 'SOCKET_IPC_METHOD_NOT_FOUND' } });
-      Promise.resolve(params).then(ctx => chains(ctx, 0)).then(
+      Promise.resolve(params).then(ctx => chains(that, ctx, 0)).then(
         params => send(that, { id, type: 'resolve', params }),
         params => send(that, { id, type: 'reject', params })
       );
@@ -38,11 +38,11 @@ const receive = (that, frame) => {
 
 // build handlers to koa style middleware
 const buildChains = (...handlers) => {
-  return function callee(ctx, index) {
+  return function callee(that, ctx, index) {
     if (index >= handlers.length) return null;
     let handler = handlers[index];
-    if (typeof handler !== 'function') return callee(ctx, index + 1);
-    return handler(ctx, () => callee(ctx, index + 1));
+    if (typeof handler !== 'function') return callee(that, ctx, index + 1);
+    return handler.call(that, ctx, () => callee(that, ctx, index + 1));
   };
 };
 
