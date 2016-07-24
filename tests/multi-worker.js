@@ -5,13 +5,13 @@ const assert = require('assert');
 if (cluster.isMaster) {
   const TEST_COUNT = 32;
   let count = 0;
-  new SocketIPC({
+  SocketIPC.registerMaster({
     init() {
       if (++count === TEST_COUNT) {
-        SocketIPC.call('exit').then(() => {
+        SocketIPC.broadcast('exit').then(() => {
           setTimeout(() => {
-            let hehe = SocketIPC.call('hehe');
-            assert.equal(hehe.length, 0);
+            let hehe = SocketIPC.broadcast('hehe');
+            assert.equal(hehe.length, 1);
             process.exit(0);
           }, 500);
         }).catch(console.error);
@@ -19,8 +19,9 @@ if (cluster.isMaster) {
     }
   });
   for (let i = 0; i < TEST_COUNT; i++) cluster.fork();
+  SocketIPC.register({ exit() {} });
 } else {
-  new SocketIPC({
+  SocketIPC.register({
     exit() {
       setTimeout(() => {
         process.exit(0);

@@ -3,15 +3,18 @@ const SocketIPC = require('../SocketIPC');
 const assert = require('assert');
 
 if (cluster.isMaster) {
-  new SocketIPC({
+  SocketIPC.registerMaster({
     init() {
       setTimeout(() => {
-        let result = SocketIPC.call('hehe');
-        assert.equal(result.length, 0);
+        let result = SocketIPC.broadcast('hehe');
+        assert.equal(result.length, 1);
         process.exit(0);
       }, 500);
     },
     exit(params) { process.exit(params); }
+  });
+  SocketIPC.register('hehe', () => {
+    return 'hehe';
   });
   let worker = cluster.fork();
 } else {

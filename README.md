@@ -10,7 +10,7 @@ const assert = require('assert');
 const SocketIPC = require('../SocketIPC');
 
 if (cluster.isMaster) {
-  new SocketIPC({
+  SocketIPC.registerMaster({
     sum(params) {
       return params.reduce((a, b) => a + b, 0);
     },

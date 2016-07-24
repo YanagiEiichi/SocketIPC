@@ -4,7 +4,7 @@ const assert = require('assert');
 
 if (cluster.isMaster) {
   let inc = 0;
-  new SocketIPC({
+  SocketIPC.registerMaster({
     init() {
       this.call('getPort').then(port => {
         assert.equal(this.socket.remotePort, port);
@@ -16,7 +16,7 @@ if (cluster.isMaster) {
   cluster.fork();
 } else {
   SocketIPC.call('init');
-  new SocketIPC({
+  SocketIPC.register({
     getPort() {
       return this.socket.localPort;
     }

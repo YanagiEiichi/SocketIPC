@@ -69,6 +69,8 @@ class SocketIPC {
   }
 }
 
+let Base = Object;
+
 if (cluster.isMaster) {
   let table = Object.create(null);
   let storage = new Set();
@@ -78,32 +80,36 @@ if (cluster.isMaster) {
     socket.on('close', () => storage.delete(ipc));
   }).listen();
   process.env.SOCKETIPC_ADDRESS = JSON.stringify(server.address());
-  class SocketIPCExport {
-    constructor(table) { for (let name in table) SocketIPCExport.register(name, table[name]); }
-    static call(...args) {
+  Base = class {
+    static broadcast(...args) {
       let results = Array.from(storage, item => item.call(...args));
       let all = Promise.all(results);
       results.then = (...args) => all.then(...args);
       results.catch = (...args) => all.catch(...args);
       return results;
     }
-    static register(name, ...handlers) { table[name] = buildChains(...handlers); }
-    call(...args) { return SocketIPCExport.call(...args); }
-    register(...args) { return SocketIPCExport.register(...args); }
+    static registerMaster(what, ...handlers) {
+      if (typeof what === 'object') {
+        for (let i in what) this.registerMaster(i, what[i]);
+        return;
+      }
+      table[what] = buildChains(...handlers);
+    }
   }
-  module.exports = SocketIPCExport;
-} else {
-  let address = JSON.parse(process.env.SOCKETIPC_ADDRESS);
-  let socket = net.connect(address);
-  let ipc = new SocketIPC(socket);
-  class SocketIPCExport {
-    constructor(table) { for (let name in table) ipc.register(name, table[name]); }
-    static call(...args) { return ipc.call(...args); }
-    static register(...args) { return ipc.register(...args); }
-    call(...args) { return ipc.call(...args); }
-    register(...args) { return ipc.register(...args); }
-  }
-  module.exports = SocketIPCExport;
 }
+
+let address = JSON.parse(process.env.SOCKETIPC_ADDRESS);
+let socket = net.connect(address);
+let ipc = new SocketIPC(socket);
+module.exports = class extends Base {
+  static call(...args) { return ipc.call(...args); }
+  static register(what, ...args) {
+    if (typeof what === 'object') {
+      for (let i in what) this.register(i, what[i]);
+      return;
+    }
+    return ipc.register(what, ...args);
+  }
+};
 
 process.on('uncaughtException', console.error);

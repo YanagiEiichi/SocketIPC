@@ -3,7 +3,7 @@ const SocketIPC = require('../SocketIPC');
 const assert = require('assert');
 
 if (cluster.isMaster) {
-  new SocketIPC({
+  SocketIPC.registerMaster({
     add(params) { return params.reduce((a, b) => a + b, 0); },
     mul(params) { return params.reduce((a, b) => a * b, 1); },
     error(params) { throw { name: 'hehe' }; },
