@@ -73,11 +73,13 @@ let Base = Object;
 
 if (cluster.isMaster) {
   let table = Object.create(null);
+  table.__init = buildChains(function() {
+    storage.add(this);
+    this.socket.on('close', () => storage.delete(this));
+  });
   let storage = new Set();
   let server = net.createServer(socket => {
-    let ipc = new SocketIPC(socket, table);
-    storage.add(ipc);
-    socket.on('close', () => storage.delete(ipc));
+    new SocketIPC(socket, table);
   }).listen();
   process.env.SOCKETIPC_ADDRESS = JSON.stringify(server.address());
   Base = class {
@@ -101,6 +103,7 @@ if (cluster.isMaster) {
 let address = JSON.parse(process.env.SOCKETIPC_ADDRESS);
 let socket = net.connect(address);
 let ipc = new SocketIPC(socket);
+ipc.call('__init');
 module.exports = class extends Base {
   static call(...args) { return ipc.call(...args); }
   static register(what, ...args) {
