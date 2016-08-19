@@ -21,7 +21,7 @@ const receive = (that, frame) => {
   switch (type) {
     case 'call':
       let chains = that[registeredMethods][method];
-      if (!chains) return send(that, { id, type: 'error', params: { name: 'SOCKET_IPC_METHOD_NOT_FOUND' } });
+      if (!chains) return send(that, { id, type: 'reject', params: { name: 'SOCKET_IPC_METHOD_NOT_FOUND' } });
       Promise.resolve(params).then(ctx => chains(that, ctx, 0)).then(
         params => send(that, { id, type: 'resolve', params }),
         params => send(that, { id, type: 'reject', params })
