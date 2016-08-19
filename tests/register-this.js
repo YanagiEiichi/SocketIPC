@@ -10,7 +10,7 @@ if (cluster.isMaster) {
         assert.equal(this.socket.remotePort, port);
         if (++inc === 2) process.exit(0);
       });
-    },
+    }
   });
   cluster.fork();
   cluster.fork();

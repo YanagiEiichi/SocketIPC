@@ -97,7 +97,7 @@ if (cluster.isMaster) {
       }
       table[what] = buildChains(...handlers);
     }
-  }
+  };
 }
 
 let address = JSON.parse(process.env.SOCKETIPC_ADDRESS);

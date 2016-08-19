@@ -28,4 +28,4 @@ if (cluster.isMaster) {
   });
 }
 
-setTimeout(() => process.exit(1), 1000)
+setTimeout(() => process.exit(1), 1000);
