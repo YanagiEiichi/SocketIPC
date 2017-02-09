@@ -75,6 +75,10 @@ if (cluster.isMaster) {
   let table = Object.create(null);
   table.__init = buildChains(function() {
     storage.add(this);
+    this.socket.on('error', () => {
+      this.socket.destroy();
+      storage.delete(this);
+    });
     this.socket.on('close', () => storage.delete(this));
   });
   let storage = new Set();
@@ -114,5 +118,3 @@ module.exports = class extends Base {
     return ipc.register(what, ...args);
   }
 };
-
-process.on('uncaughtException', console.error);
