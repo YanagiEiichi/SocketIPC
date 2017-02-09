@@ -114,5 +114,3 @@ module.exports = class extends Base {
     return ipc.register(what, ...args);
   }
 };
-
-process.on('uncaughtException', console.error);
