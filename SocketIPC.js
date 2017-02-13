@@ -52,6 +52,7 @@ class SocketIPC {
     this[registeredMethods] = Object.create(table);
     this[inc] = 1;
     this[callings] = new Map();
+    socket.unref();
     socket.pipe(new FrameGenerator(function*() {
       return JSON.parse(yield (yield 4).readUInt32LE());
     })).on('data', frame => receive(this, frame));
@@ -85,6 +86,7 @@ if (cluster.isMaster) {
   let server = net.createServer(socket => {
     new SocketIPC(socket, table);
   }).listen();
+  server.unref();
   process.env.SOCKETIPC_ADDRESS = JSON.stringify(server.address());
   Base = class {
     static broadcast(...args) {
