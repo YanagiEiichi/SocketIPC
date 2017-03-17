@@ -1,6 +1,6 @@
 const cluster = require('cluster');
-const SocketIPC = require('..');
-const assert = require('assert');
+const SequenceTester = require('sequence-tester');
+const IPC = require('..');
 
 class HeheError extends Error {
   constructor() {
@@ -9,34 +9,40 @@ class HeheError extends Error {
   }
 }
 
+const die = (error) => {
+  console.error(error);
+  IPC.call('exit', 1);
+};
+
 if (cluster.isMaster) {
-  SocketIPC.registerMaster({
+
+  IPC.registerMaster({
     add(params) { return params.reduce((a, b) => a + b, 0); },
     mul(params) { return params.reduce((a, b) => a * b, 1); },
     error() { throw new HeheError(); },
     exit(params) { process.exit(params); }
   });
+
   cluster.fork();
+
 } else {
-  let inc = 0;
-  const die = (error) => {
-    console.error(error);
-    SocketIPC.call('exit', 1);
-  };
-  SocketIPC.call('add', [ 5, 7, 12 ]).then(result => {
-    assert.equal(result, 24);
-    inc++;
+
+  const st = new SequenceTester([ true, true, true ]);
+
+  st.then(() => {
+    IPC.call('exit', 0);
+  }, die);
+
+  IPC.call('add', [ 5, 7, 12 ]).then(result => {
+    st.assert(result === 24);
   }).catch(die);
-  SocketIPC.call('mul', [ 2, 3, 4 ]).then(result => {
-    assert.equal(result, 24);
-    inc++;
+
+  IPC.call('mul', [ 2, 3, 4 ]).then(result => {
+    st.assert(result === 24);
   }).catch(die);
-  SocketIPC.call('error').catch(result => {
-    assert.deepEqual(result, { name: 'hehe' });
-    inc++;
+
+  IPC.call('error').catch(result => {
+    st.assert(result.name === 'hehe');
   }).catch(die);
-  setTimeout(() => {
-    assert.equal(inc, 3);
-    SocketIPC.call('exit', 0);
-  }, 1000);
+
 }

@@ -1,26 +1,35 @@
 const cluster = require('cluster');
-const SocketIPC = require('..');
-const assert = require('assert');
+const IPC = require('..');
+const SequenceTester = require('sequence-tester');
 
 if (cluster.isMaster) {
-  let inc = 0;
-  SocketIPC.registerMaster({
+
+  const st = new SequenceTester([ true, true ]);
+
+  st.then(() => process.exit(0)).catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
+
+  IPC.registerMaster({
     init() {
       this.call('getPort').then(port => {
-        assert.equal(this.socket.remotePort, port);
-        if (++inc === 2) process.exit(0);
+        st.assert(this.socket.remotePort === port);
       });
     }
   });
+
   cluster.fork();
   cluster.fork();
+
 } else {
-  SocketIPC.call('init');
-  SocketIPC.register({
+
+  IPC.call('init');
+
+  IPC.register({
     getPort() {
       return this.socket.localPort;
     }
   });
-}
 
-setTimeout(() => process.exit(1), 5000);
+}

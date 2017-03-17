@@ -1,6 +1,6 @@
 {
   "name": "SocketIPC",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Implements IPC with Socket on cluster mode",
   "main": "index.js",
   "directories": {
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "eslint": "^3.17.1",
-    "eslint-config-elemefe": "^0.2.0"
+    "eslint-config-elemefe": "^0.2.0",
+    "sequence-tester": "^0.1.1"
   }
 }
