@@ -1,5 +1,5 @@
 const cluster = require('cluster');
-const SocketIPC = require('../SocketIPC');
+const SocketIPC = require('..');
 const assert = require('assert');
 
 class HeheError extends Error {

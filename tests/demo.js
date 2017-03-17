@@ -1,6 +1,6 @@
 const cluster = require('cluster');
 const assert = require('assert');
-const SocketIPC = require('../SocketIPC');
+const SocketIPC = require('..');
 
 if (cluster.isMaster) {
   SocketIPC.registerMaster({
