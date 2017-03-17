@@ -1,7 +1,5 @@
 const net = require('net');
 const cluster = require('cluster');
-const { Readable } = require('stream');
-const { EventEmitter } = require('events');
 const FrameGenerator = require('FrameGenerator');
 
 const registeredMethods = Symbol();
@@ -53,7 +51,7 @@ class SocketIPC {
     this[inc] = 1;
     this[callings] = new Map();
     socket.unref();
-    socket.pipe(new FrameGenerator(function*() {
+    socket.pipe(new FrameGenerator(function *() {
       return JSON.parse(yield (yield 4).readUInt32LE());
     })).on('data', frame => receive(this, frame));
   }
@@ -84,7 +82,7 @@ if (cluster.isMaster) {
   });
   let storage = new Set();
   let server = net.createServer(socket => {
-    new SocketIPC(socket, table);
+    void new SocketIPC(socket, table);
   }).listen();
   server.unref();
   process.env.SOCKETIPC_ADDRESS = JSON.stringify(server.address());

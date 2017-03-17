@@ -16,7 +16,7 @@ if (cluster.isMaster) {
   SocketIPC.register('hehe', () => {
     return 'hehe';
   });
-  let worker = cluster.fork();
+  cluster.fork();
 } else {
   SocketIPC.call('init').then(() => {
     process.exit(1);

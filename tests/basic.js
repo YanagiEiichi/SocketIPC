@@ -2,11 +2,18 @@ const cluster = require('cluster');
 const SocketIPC = require('../SocketIPC');
 const assert = require('assert');
 
+class HeheError extends Error {
+  constructor() {
+    super();
+    this.name = 'hehe';
+  }
+}
+
 if (cluster.isMaster) {
   SocketIPC.registerMaster({
     add(params) { return params.reduce((a, b) => a + b, 0); },
     mul(params) { return params.reduce((a, b) => a * b, 1); },
-    error(params) { throw { name: 'hehe' }; },
+    error() { throw new HeheError(); },
     exit(params) { process.exit(params); }
   });
   cluster.fork();

@@ -7,11 +7,16 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "cd tests && ./test.sh"
+    "lint": "eslint .",
+    "test": "eslint . && cd tests && ./test.sh"
   },
   "author": "admin@web-tinker.com",
   "license": "MIT",
   "dependencies": {
     "FrameGenerator": "^0.2.4"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "eslint-config-elemefe": "^0.2.0"
   }
 }
