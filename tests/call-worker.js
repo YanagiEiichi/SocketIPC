@@ -7,7 +7,7 @@ if (cluster.isMaster) {
 
   let COUNT = 3;
 
-  let st = new SequenceTester(Array.from({ length: COUNT }, () => true));
+  let st = new SequenceTester(Array.from({ length: COUNT + 1 }, () => true));
 
   registerMaster('init', () => st.assert(true));
 
