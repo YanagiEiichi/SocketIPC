@@ -1,6 +1,6 @@
 {
   "name": "SocketIPC",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Implements IPC with Socket on cluster mode",
   "main": "index.js",
   "directories": {
