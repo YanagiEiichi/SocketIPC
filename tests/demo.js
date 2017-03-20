@@ -1,23 +1,35 @@
 const cluster = require('cluster');
 const assert = require('assert');
-const SocketIPC = require('../SocketIPC');
+const { call, registerMaster } = require('..');
 
 if (cluster.isMaster) {
-  SocketIPC.registerMaster({
+
+  registerMaster({
+
     sum(params) {
       return params.reduce((a, b) => a + b, 0);
     },
+
     exit(code) {
       process.exit(code);
     }
+
   });
+
   cluster.fork();
+
 } else {
-  SocketIPC.call('sum', [ 1, 2, 3, 4 ]).then(result => {
+
+  call('sum', [ 1, 2, 3, 4 ]).then(result => {
+
     assert.equal(result, 10);
-    SocketIPC.call('exit', 0);
+    call('exit', 0);
+
   }).catch(error => {
+
     console.error(error);
-    SocketIPC.call('exit', 1);
+    call('exit', 1);
+
   });
+
 }

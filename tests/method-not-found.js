@@ -1,31 +1,46 @@
 const cluster = require('cluster');
-const SocketIPC = require('../SocketIPC');
-const assert = require('assert');
+const SequenceTester = require('sequence-tester');
+const IPC = require('..');
 
-let p = 0;
+const die = () => {
+  console.error('hehe must be not-found');
+  process.exit(1);
+};
 
 if (cluster.isMaster) {
-  cluster.fork().on('online', () => {
-    SocketIPC.broadcast('hehe').then(() => {
-      console.error('hehe must be not-found');
-      process.exit(1);
-    }, error => {
-      assert.equal(error.name, 'SOCKET_IPC_METHOD_NOT_FOUND');
-      SocketIPC.call('ok');
+
+  const st = new SequenceTester([
+    'SOCKET_IPC_METHOD_NOT_FOUND',
+    'SOCKET_IPC_METHOD_NOT_FOUND',
+    'SOCKET_IPC_METHOD_NOT_FOUND'
+  ]);
+
+  st.then(() => {
+    process.exit(0);
+  }, die);
+
+  IPC.registerMaster('ready', () => {
+    IPC.broadcast('hehe').then(die, error => {
+      st.assert(error.name);
     });
   });
-  SocketIPC.registerMaster('ok', () => {
-    p++;
-    if (p === 2) process.exit(0);
-  });
-} else {
-  SocketIPC.call('hehe').then(() => {
-    console.error('hehe must be not-found');
-    process.exit(1);
-  }, error => {
-    assert.equal(error.name, 'SOCKET_IPC_METHOD_NOT_FOUND');
-    SocketIPC.call('ok');
-  });
-}
 
-setTimeout(() => process.exit(1), 1000);
+  IPC.registerMaster('assert', ({ name }) => {
+    st.assert(name);
+  });
+
+  cluster.fork();
+
+} else {
+
+  IPC.call('ready');
+
+  IPC.call('hehe').then(die, error => {
+    IPC.call('assert', { name: error.name });
+  });
+
+  IPC.broadcast('hehe').then(die, error => {
+    IPC.call('assert', { name: error.name });
+  });
+
+}

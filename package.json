@@ -1,17 +1,23 @@
 {
   "name": "SocketIPC",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Implements IPC with Socket on cluster mode",
-  "main": "SocketIPC.js",
+  "main": "index.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "cd tests && ./test.sh"
+    "lint": "eslint .",
+    "test": "eslint . && cd tests && ./test.sh"
   },
   "author": "admin@web-tinker.com",
   "license": "MIT",
   "dependencies": {
     "FrameGenerator": "^0.2.4"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "eslint-config-elemefe": "^0.2.0",
+    "sequence-tester": "^0.1.1"
   }
 }
