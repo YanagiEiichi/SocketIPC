@@ -8,6 +8,12 @@ const workerAlias = 'worker'
 let COUNT = 3;
 
 if (cluster.isMaster) {
+  try {
+    setAlias('test')
+  } catch (e) {
+    assert(e.name, 'SOCKET_IPC_PID_NOT_FOUND')
+  }
+
   ready().then(() => {
     setAlias('master').then(result => assert.equal(result, true));
 
