@@ -1,4 +1,3 @@
-*.swp
+.*
 *.log
-!.eslintrc
 node_modules
