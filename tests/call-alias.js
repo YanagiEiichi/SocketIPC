@@ -14,6 +14,10 @@ if (cluster.isMaster) {
     assert(e.name, 'SOCKET_IPC_PID_NOT_FOUND')
   }
 
+  callAlias(workerAlias, 'ok').catch(err => {
+    assert(err.name, 'SOCKET_IPC_ALIAS_NOT_FOUND_ERROR')
+  })
+
   ready().then(() => {
     setAlias('master').then(result => assert.equal(result, true));
 
