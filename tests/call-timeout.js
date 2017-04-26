@@ -37,7 +37,7 @@ if (cluster.isMaster) {
   const c3 = call({ method: 'wait', timeout: 1000}, 2000).then(result => {
     assert.equal(result, true);
   }).catch(err => {
-    assert.equal(err.name, 'Socket_Ipc_call_timeout');
+    assert.equal(err.name, 'SOCKET_IPC_CALL_TIMEOUT');
   });
 
   Promise.all([c1, c2, c3]).then(() => {
