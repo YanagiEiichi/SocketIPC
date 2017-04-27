@@ -1,6 +1,6 @@
 const cluster = require('cluster');
 const assert = require('assert');
-const { call, registerMaster } = require('..');
+const { call, registerMaster, callWithTimeout } = require('..');
 
 if (cluster.isMaster) {
 
@@ -26,15 +26,15 @@ if (cluster.isMaster) {
 
 } else {
 
-  const c1 = call({ method: 'sum' }, [ 1, 2, 3, 4 ]).then(result => {
+  const c1 = call('sum', [ 1, 2, 3, 4 ]).then(result => {
     assert.equal(result, 10);
   });
 
-  const c2 = call({ method: 'wait', timeout: 3000}, 1000).then(result => {
+  const c2 = callWithTimeout({ method: 'wait', timeout: 3000}, 1000).then(result => {
     assert.equal(result, true);
   });
 
-  const c3 = call({ method: 'wait', timeout: 1000}, 2000).then(result => {
+  const c3 = callWithTimeout({ method: 'wait', timeout: 1000}, 2000).then(result => {
     assert.equal(result, true);
   }).catch(err => {
     assert.equal(err.name, 'SOCKET_IPC_CALL_TIMEOUT');
