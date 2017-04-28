@@ -26,8 +26,8 @@ if (cluster.isMaster) {
 
 } else {
 
-  const c1 = call('sum', [ 1, 2, 3, 4 ]).then(result => {
-    assert.equal(result, 10);
+  const c1 = call('wait', 6000).then(result => {
+    assert.equal(result, true);
   });
 
   const c2 = callWithTimeout({ method: 'wait', timeout: 3000}, 1000).then(result => {
