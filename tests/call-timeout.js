@@ -30,11 +30,11 @@ if (cluster.isMaster) {
     assert.equal(result, true);
   });
 
-  const c2 = callWithTimeout({ method: 'wait', timeout: 3000}, 1000).then(result => {
+  const c2 = callWithTimeout('wait', 3000, 1000).then(result => {
     assert.equal(result, true);
   });
 
-  const c3 = callWithTimeout({ method: 'wait', timeout: 1000}, 2000).then(result => {
+  const c3 = callWithTimeout('wait', 1000, 2000).then(result => {
     assert.equal(result, true);
   }).catch(err => {
     assert.equal(err.name, 'SOCKET_IPC_CALL_TIMEOUT');
